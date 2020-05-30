@@ -61,8 +61,14 @@ done
 
 ```sh
 tools=(
+  asdf
   awscli
+  coreutils
+  curl
+  git
+  git-lfs
   python
+  miniconda
 )
 
 for tool in ${tools[@]}; do
@@ -76,14 +82,20 @@ done
 - Auto Rename Tag (optional)
 - Beautify
 - Bracket Pair Colorizer 2
+- Community Material Theme
 - Debugger for Chrome
 - Docker
 - ESLint
+- GraphQL for VSCode
 - indent-rainbow
+- JSON to JS converter
 - Kubernetes
 - markdownlint
 - Material Icon Theme
 - Material Theme
+- Matrial Theme Icons
 - Prettier - Code formatter
+- Python
 - REST Client
+- Velocity
 - YAML
