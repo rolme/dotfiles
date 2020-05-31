@@ -67,6 +67,7 @@ tools=(
   curl
   git
   git-lfs
+  gpg
   python
   miniconda
 )
