@@ -87,16 +87,16 @@ done
 - Debugger for Chrome
 - Docker
 - ESLint
-- GraphQL for VSCode
+- GitLens
+- GraphQL for VSCode (optional)
 - indent-rainbow
 - JSON to JS converter
 - Kubernetes
-- markdownlint
+- markdownlint (optional)
 - Material Icon Theme
 - Material Theme
 - Matrial Theme Icons
 - Prettier - Code formatter
 - Python
-- REST Client
-- Velocity
+- REST Client (optional)
 - YAML
