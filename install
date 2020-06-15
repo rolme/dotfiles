@@ -1,9 +1,6 @@
 #!/bin/sh
 # This script installs all required tools and applications for a full stack
-# developer. The follow are TODOs:
-#
-# - automate customization of oh-my-zsh
-#
+# developer.
 
 # DEFAULT SETTINGS
 ALL=${ALL:-yes}
@@ -74,6 +71,8 @@ install_oh_my_zsh() {
     echo
     echo "${BLUE}> sh -c \"\$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)\" < /dev/null ...${RESET}"
     sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" < /dev/null
+    echo "${BLUE}> ln -fs ~/.files/oh-my-zsh/.zshrc ~/.zshrc${RESET}"
+    ln -fs ~/.files/oh-my-zsh/.zshrc ~/.zshrc
     echo "${BLUE}> done${RESET}"
   fi
 }

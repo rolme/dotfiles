@@ -100,7 +100,10 @@ source $ZSH/oh-my-zsh.sh
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
-alias z="vi ~/.zshrc_local"
+alias files="~/.files && asp && deactivate 2>/dev/null"
+alias z="source ~/.zshrc"
+alias zrc="vi ~/.zshrc"
+alias zl="vi ~/.zshrc_local"
 
 if [ -e ~/.zshrc_local ]; then
   source ~/.zshrc_local
