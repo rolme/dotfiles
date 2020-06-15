@@ -1,5 +1,5 @@
 # If you come from bash you might have to change your $PATH.
-export PATH=$HOME/bin:/usr/local/bin:$PATH
+# export PATH=$HOME/bin:/usr/local/bin:$PATH
 
 # Path to your oh-my-zsh installation.
 export ZSH="/Users/rolme/.oh-my-zsh"
@@ -7,12 +7,12 @@ export ZSH="/Users/rolme/.oh-my-zsh"
 # Set name of the theme to load --- if set to "random", it will
 # load a random theme each time oh-my-zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
-# See https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
+# See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
 ZSH_THEME="ronparnaso"
 
 # Set list of themes to pick from when loading at random
 # Setting this variable when ZSH_THEME=random will cause zsh to load
-# a theme from this variable instead of looking in ~/.oh-my-zsh/themes/
+# a theme from this variable instead of looking in $ZSH/themes/
 # If set to an empty array, this variable will have no effect.
 # ZSH_THEME_RANDOM_CANDIDATES=( "robbyrussell" "agnoster" )
 
@@ -64,19 +64,20 @@ ZSH_THEME="ronparnaso"
 ZSH_CUSTOM=/Users/rolme/.files/oh-my-zsh/custom
 
 # Which plugins would you like to load?
-# Standard plugins can be found in ~/.oh-my-zsh/plugins/*
-# Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
+# Standard plugins can be found in $ZSH/plugins/
+# Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(aws colorize git osx themes)
+plugins=(asdf aws colorize git osx themes)
 
-# User configuration
 SHOW_AWS_PROMPT=false
 export AWS_SDK_LOAD_CONFIG=true
-export PATH="./node_modules/.bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
-# export MANPATH="/usr/local/man:$MANPATH"
 
 source $ZSH/oh-my-zsh.sh
+
+# User configuration
+
+# export MANPATH="/usr/local/man:$MANPATH"
 
 # You may need to manually set your language environment
 # export LANG=en_US.UTF-8
@@ -99,34 +100,8 @@ source $ZSH/oh-my-zsh.sh
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
-alias env-specialist="conda activate specialist && asp wps"
-alias env-refactor="conda activate refactor && asp refactor"
-alias env-wps="conda activate wps && asp wps"
+alias z="vi ~/.zshrc_local"
 
-# tabtab source for serverless package
-# uninstall by removing these lines or running `tabtab uninstall serverless`
-[[ -f /Users/rolme/refactor-services/node_modules/tabtab/.completions/serverless.zsh ]] && . /Users/rolme/refactor-services/node_modules/tabtab/.completions/serverless.zsh
-# tabtab source for sls package
-# uninstall by removing these lines or running `tabtab uninstall sls`
-[[ -f /Users/rolme/refactor-services/node_modules/tabtab/.completions/sls.zsh ]] && . /Users/rolme/refactor-services/node_modules/tabtab/.completions/sls.zsh
-# tabtab source for slss package
-# uninstall by removing these lines or running `tabtab uninstall slss`
-[[ -f /Users/rolme/refactor-services/node_modules/tabtab/.completions/slss.zsh ]] && . /Users/rolme/refactor-services/node_modules/tabtab/.completions/slss.zsh
-
-export PATH="$PATH:$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
-
-# >>> conda initialize >>>
-# !! Contents within this block are managed by 'conda init' !!
-__conda_setup="$('/Users/rolme/miniconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
-if [ $? -eq 0 ]; then
-    eval "$__conda_setup"
-else
-    if [ -f "/Users/rolme/miniconda3/etc/profile.d/conda.sh" ]; then
-        . "/Users/rolme/miniconda3/etc/profile.d/conda.sh"
-    else
-        export PATH="/Users/rolme/miniconda3/bin:$PATH"
-    fi
+if [ -e ~/.zshrc_local ]; then
+  source ~/.zshrc_local
 fi
-unset __conda_setup
-# <<< conda initialize <<<
-

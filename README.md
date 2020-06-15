@@ -5,98 +5,25 @@ This is a configuration repository to get a new MacOSX up and running
 ## Installation
 
 ```zsh
-/usr/bin/ruby -e "\$(curl -fsSL https://raw.githubusercontent.com/rolme/.files/feat/install-script/install)"
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/rolme/.files/master/install)"
 ```
 
-### Generating new SSH keys
+## Generating new SSH keys
 
 Generate [SSH keys](https://help.github.com/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent/) for new installations.
 
-Clone this repo into your home directory
+## Configuring Oh-My-Zsh
+
+Clone this repo into your home directory. This will allow oh-my-zsh to access the custom themes, plugins. and resource files.
 
 ```zsh
 git clone git@github.com:rolme/.files.git
 ```
 
-This will create a ~/.files directory. Then you can run the installer.
+link .zshrc into home directory
 
 ```zsh
-~/.files/install.sh
+ln -s ~/.files/oh-my-zsh/.zshrc ~/.zshrc
 ```
 
-## Manual Installation
-
-### Install homebrew
-
-```sh
-/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-```
-
-### Install oh-my-zsh
-
-```sh
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
-```
-
-### Install cask applications
-
-```sh
-casks=(
-  1password
-  chrome
-  docker
-  iterm2
-  moom
-  slack
-  visual-studio-code
-  zoomus
-)
-
-for cask in ${casks[@]}; do
-  brew cask install $cask
-done
-```
-
-### Install command line tools
-
-```sh
-tools=(
-  asdf
-  awscli
-  coreutils
-  curl
-  git
-  git-lfs
-  gpg
-  python
-  miniconda
-)
-
-for tool in ${tools[@]}; do
-  brew install $tool
-done
-```
-
-### VSCode Extensions
-
-- Apollo GraphQL
-- Auto Rename Tag (optional)
-- Beautify
-- Bracket Pair Colorizer 2
-- Community Material Theme
-- Debugger for Chrome
-- Docker
-- ESLint
-- GitLens
-- GraphQL for VSCode (optional)
-- indent-rainbow
-- JSON to JS converter
-- Kubernetes
-- markdownlint (optional)
-- Material Icon Theme
-- Material Theme
-- Matrial Theme Icons
-- Prettier - Code formatter
-- Python
-- REST Client (optional)
-- YAML
+Specific customizations that exists only for target machine can be placed in .z

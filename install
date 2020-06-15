@@ -1,169 +1,254 @@
-#!/user/bin/ruby
+#!/bin/sh
+# This script installs all required tools and applications for a full stack
+# developer. The follow are TODOs:
+#
+# - automate customization of oh-my-zsh
+#
 
-# get nicer global variables
-require "English"
+# DEFAULT SETTINGS
+ALL=${ALL:-yes}
+APPLICATIONS=${APPLICATIONS:-no}
+EXTENSIONS=${EXTENSIONS:-no}
+HOMEBREW=${HOMEBREW:-no}
+OHMYZSH=${OHMYZSH:-no}
+TOOLS=${TOOLS:-no}
+LANGUAGES=${LANGUAGES:-no}
+XCODE=${XCODE:-no}
 
-module Tty
-  module_function
+command_exists() {
+	command -v "$@" >/dev/null 2>&1
+}
 
-  def blue
-    bold 34
-  end
+error() {
+	echo ${RED}"Error: $@"${RESET} >&2
+}
 
-  def red
-    bold 31
-  end
+setup_color() {
+	# Only use colors if connected to a terminal
+	if [ -t 1 ]; then
+		RED=$(printf '\033[31m')
+		GREEN=$(printf '\033[32m')
+		YELLOW=$(printf '\033[33m')
+		BLUE=$(printf '\033[34m')
+		BOLD=$(printf '\033[1m')
+		RESET=$(printf '\033[m')
+	else
+		RED=""
+		GREEN=""
+		YELLOW=""
+		BLUE=""
+		BOLD=""
+		RESET=""
+	fi
+}
 
-  def reset
-    escape 0
-  end
+# install xcode command line tools
+install_xcode() {
+  if [ $ALL = yes ] || [ $XCODE = yes ]; then
+    echo
+    echo "${YELLOW}==== XCode Command Line Tool ====${RESET}"
+    echo
+    echo "${BLUE}> xcode-select --install 2>/dev/null ...${RESET}"
+    xcode-select --install
+    echo "${BLUE}> done${RESET}"
+  fi
+}
 
-  def bold(code = 39)
-    escape "1;#{code}"
-  end
+# install homebrew 
+install_homebrew() {
+  if [ $ALL = yes ] || [ $HOMEBREW = yes ]; then
+    echo
+    echo "${YELLOW}==== Homebrew ====${RESET}"
+    echo
+    echo "${BLUE}> /bin/bash -c \"\$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)\" < /dev/null ...${RESET}"
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)" < /dev/null
+    echo "${BLUE}> done${RESET}"
+  fi
+}
 
-  def underline
-    escape "4;39"
-  end
+# install oh-my-zsh
+install_oh_my_zsh() {
+  if [ $ALL = yes ] || [ $OHMYZSH = yes ]; then
+    echo
+    echo "${YELLOW}==== Oh-My-Zsh ====${RESET}"
+    echo
+    echo "${BLUE}> sh -c \"\$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)\" < /dev/null ...${RESET}"
+    sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" < /dev/null
+    echo "${BLUE}> done${RESET}"
+  fi
+}
 
-  def escape(code)
-    "\033[#{code}m" if STDOUT.tty?
-  end
-end
+# brew install command line tools
+install_cli_tools() {
+  if [ $ALL = yes ] || [ $TOOLS = yes ]; then
+    echo
+    echo "${YELLOW}==== Command Line Tools (brew) ====${RESET}"
+    echo
+    echo "${BLUE}> checking if ${RESET}brew${BLUE} exists${RESET}"
 
-class Array
-  def shell_s
-    cp = dup
-    first = cp.shift
-    cp.map { |arg| arg.gsub " ", "\\ " }.unshift(first).join(" ")
-  end
-end
+    command_exists brew || {
+      error 'brew is not installed'
+      exit 1
+    }
 
-def ohai(*args)
-  puts "#{Tty.blue}==>#{Tty.bold} #{args.shell_s}#{Tty.reset}"
-end
+    tools=(
+      asdf
+      awscli
+      coreutils
+      curl
+      git
+      git-lfs
+      gpg
+    )
 
-def warn(warning)
-  puts "#{Tty.red}Warning#{Tty.reset}: #{warning.chomp}"
-end
+    for tool in ${tools[@]}; do
+      echo "${BLUE}> brew install ${tool}${RESET}"
+      brew install $tool
+      echo "${BLUE}> done${RESET}"
+      echo
+    done
+  fi
+}
 
-def system(*args)
-  abort "Failed during: #{args.shell_s}" unless Kernel.system(*args)
-end
+# asdf install languages
+install_languages() {
+  if [ $ALL = yes ] || [ $LANGUAGES = yes ]; then
+    echo
+    echo "${YELLOW}==== Languages (asdf) ====${RESET}"
+    echo
+    echo "${BLUE}> checking if ${RESET}asdf${BLUE} exists${RESET}"
 
-def sudo(*args)
-  args.unshift("-A") unless ENV["SUDO_ASKPASS"].nil?
-  ohai "/usr/bin/sudo", *args
-  system "/usr/bin/sudo", *args
-end
+    command_exists asdf || {
+      error 'asdf is not installed'
+      exit 1
+    }
 
-def getc
-  system "/bin/stty raw -echo"
-  if STDIN.respond_to?(:getbyte)
-    STDIN.getbyte
-  else
-    STDIN.getc
-  end
-ensure
-  system "/bin/stty -raw echo"
-end
+    languages=(
+      dart
+      golang
+      nodejs
+      python
+      ruby
+      yarn
+    )
 
-def wait_for_user
-  puts
-  puts "Press RETURN to continue or any other key to abort"
-  c = getc
-  # we test for \r and \n because some stuff does \r instead
-  abort unless (c == 13) || (c == 10)
-end
+    for lang in ${languages[@]}; do
+      echo "${BLUE}> asdf plugin add ${lang} ...${RESET}"
+      asdf plugin add $lang
+      echo "${BLUE}> asdf install ${lang} latest ...${RESET}"
+      asdf install $lang latest
+      echo "${BLUE}> asdf global ${lang} latest ...${RESET}"
+      asdf global $lang latest
+      echo "${BLUE}> ${lang} done${RESET}"
+      echo
+    done
+  fi
+}
 
-class Version
-  include Comparable
-  attr_reader :parts
+# brew cask install applications
+install_applications() {
+  if [ $ALL = yes ] || [ $APPLICATIONS = yes ]; then
+    echo
+    echo "${YELLOW}==== Applications (brew cask) ====${RESET}"
+    echo
+    echo "${BLUE}> checking if ${RESET}brew${BLUE} exists${RESET}"
 
-  def initialize(str)
-    @parts = str.split(".").map(&:to_i)
-  end
+    command_exists brew || {
+      error 'brew is not installed'
+      exit 1
+    }
 
-  def <=>(other)
-    parts <=> self.class.new(other).parts
-  end
+    casks=(
+      # 1password
+      # chrome
+      # docker
+      iterm2
+      # moom
+      slack
+      visual-studio-code
+      zoomus
+    )
 
-  def to_s
-    parts.join(".")
-  end
-end
+    for cask in ${casks[@]}; do
+      echo "${BLUE}> brew cask install ${cask}${RESET}"
+      brew cask install $cask
+      echo "${BLUE}> done${RESET}"
+      echo
+    done
+  fi
+}
 
-def macos_version
-  @macos_version ||= Version.new(`/usr/bin/sw_vers -productVersion`.chomp[/10\.\d+/])
-end
+# Install VSCode extensions
+# list was take using the following command
+# > code --list-extensions
+install_vscode_extensions() {
+  if [ $ALL = yes ] || [ $EXTENSIONS = yes ]; then
+    echo
+    echo "${YELLOW}==== Visual Studio Code Extensions ====${RESET}"
+    echo
+    echo "${BLUE}> checking if ${RESET}code${BLUE} exists${RESET}"
 
-def should_install_command_line_tools?
-  if macos_version > "10.13"
-    !File.exist?("/Library/Developer/CommandLineTools/usr/bin/git")
-  else
-    !File.exist?("/Library/Developer/CommandLineTools/usr/bin/git") ||
-      !File.exist?("/usr/include/iconv.h")
-  end
-end
+    command_exists code || {
+      error 'code is not installed'
+      exit 1
+    }
 
-def user_only_chmod?(path)
-  return false unless File.directory?(path)
+    extensions=(
+      apollographql.vscode-apollo
+      CoenraadS.bracket-pair-colorizer-2
+      dbaeumer.vscode-eslint
+      eamodio.gitlens
+      Equinusocio.vsc-community-material-theme
+      Equinusocio.vsc-material-theme
+      equinusocio.vsc-material-theme-icons
+      esbenp.prettier-vscode
+      HookyQR.beautify
+      # ms-azuretools.vscode-docker
+      # ms-kubernetes-tools.vscode-kubernetes-tools
+      ms-python.python
+      # msjsdiag.debugger-for-chrome
+      oderwat.indent-rainbow
+      PKief.material-icon-theme
+      redhat.vscode-yaml
+    )
 
-  mode = File.stat(path).mode & 0777
-  # u = (mode >> 6) & 07
-  # g = (mode >> 3) & 07
-  # o = (mode >> 0) & 07
-  mode != 0755
-end
+    for extn in ${extensions[@]}; do
+      echo "${BLUE}> code --install-extension ${extn}${RESET}"
+      code --install-extension $extn
+      echo "${BLUE}> done${RESET}"
+      echo
+    done
+  fi
+}
 
-def chmod?(path)
-  File.exist?(path) && !(File.readable?(path) && File.writable?(path) && File.executable?(path))
-end
+main() {
+	# Parse arguments
+	while [ $# -gt 0 ]; do
+    ALL=no
+		case $1 in
+			--xcode) XCODE=yes ;;
+			--homebrew) HOMEBREW=yes ;;
+			--ohmyzsh) OHMYZSH=yes ;;
+			--tools) TOOLS=yes ;;
+			--languages) LANGUAGES=yes ;;
+			--applications) APPLICATIONS=yes ;;
+			--extensions) EXTENSIONS=yes ;;
+		esac
+		shift
+	done
 
-def chown?(path)
-  !File.owned?(path)
-end
+  setup_color
+  echo
+  echo "${GREEN}==== .FILES INSTALLATION ====${RESET}"
+  install_xcode
+  install_homebrew
+  install_oh_my_zsh
+  install_cli_tools
+  install_languages
+  install_applications
+  install_vscode_extensions
+  echo
+  echo "${GREEN}Installation complete!${RESET}"
+}
 
-def chgrp?(path)
-  !File.grpowned?(path)
-end
-
-# USER isn't always set so provide a fall back for the installer and subprocesses.
-ENV["USER"] ||= `id -un`.chomp
-
-# Invalidate sudo timestamp before exiting (if it wasn't active before).
-Kernel.system "/usr/bin/sudo -n -v 2>/dev/null"
-at_exit { Kernel.system "/usr/bin/sudo", "-k" } unless $CHILD_STATUS.success?
-
-if macos_version < "10.9"
-  abort "Your OS X version is too old"
-elsif Process.uid.zero?
-  abort "Don't run this as root!"
-elsif !`dsmemberutil checkmembership -U "#{ENV["USER"]}" -G admin`.include?("user is a member")
-  abort "This script requires the user #{ENV["USER"]} to be an Administrator."
-end
-
-ohai "This script will install base requirements:"
-puts "xcode"
-puts "homebrew"
-puts "oh-my-zsh"
-
-ohai "After base installation, you can run the following for more apps:"
-ohai ".files install --group development"
-puts "vscode"
-puts "docker"
-puts "postman"
-puts "chrome"
-
-ohai ".files install --group office"
-puts "1password"
-puts "moom"
-puts "slack"
-puts "zoom"
-
-ohai ".files install --group design"
-puts "sketch"
-
-ohai ".files install --group games"
-puts "battle.net"
-puts "hearthstone"
+main "$@"
