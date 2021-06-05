@@ -158,11 +158,11 @@ install_applications() {
     }
 
     casks=(
-      # 1password
+      1password
       # chrome
       # docker
       iterm2
-      # moom
+      moom
       slack
       visual-studio-code
       zoomus
